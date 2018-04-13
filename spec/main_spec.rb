@@ -40,4 +40,16 @@ describe 'Main class methods' do
     expect(Main.matcher(1, "1")).to be true
     expect(Main.matcher(1, 1)).to be true
   end
+
+  it 'filters array by `direction` attribute (buy/sell)' do
+    orders = [stringify({'direction': 'buy'}), stringify({'direction': 'sell'})]
+    expect(Main.order_filter(orders).count).to eq(1)
+    expect(Main.order_filter(orders, 'buy').count).to eq(1)
+    expect(Main.order_filter(orders, 'sell').count).to eq(1)
+  end
+
+  def stringify(hash)
+    Hash[hash.collect{|k,v| [k.to_s, v]}]
+  end
+
 end
