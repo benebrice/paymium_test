@@ -36,6 +36,16 @@ def remove_queued_order(orders, order_id)
   orders.select{|order| !matcher(order['id'], order_id) }
 end
 
+def record_orders(users, buying_orders, selling_orders, orders)
+  output_file = File.open('output2.json', 'w')
+  hash = {
+    users: users,
+    queued_orders: buying_orders + selling_orders,
+    orders: orders
+  }
+  output_file.write(hash.to_json)
+end
+
 data = JSON.parse(File.open('data.json').read)
 
 @users = data['users']
@@ -53,3 +63,5 @@ queued_orders = data['queued_orders']
     end
   end
 end
+
+record_orders(@users, @buying_orders, @selling_orders, @orders)
