@@ -48,10 +48,10 @@ class Main
     user = @users.select{|u| Main.matcher(u['id'], user_id) }.first
     if direction == 'buy'
       user['btc_balance'] += btc_amount
-      user['eur_balance'] -= price
+      user['eur_balance'] -= btc_amount*price
     else
       user['btc_balance'] -= btc_amount
-      user['eur_balance'] += price
+      user['eur_balance'] += btc_amount * price
     end
     @final_users.push(user)
   end
@@ -69,8 +69,8 @@ class Main
       orders.select{|order| !matcher(order['id'], order_id) }
     end
 
-    def record_orders(users, buying_orders, selling_orders, orders)
-      output_file = File.open('output2.json', 'w')
+    def record_orders(users, buying_orders, selling_orders, orders, file_name = 'output2.json')
+      output_file = File.open(file_name, 'w')
       hash = {
         users: users,
         queued_orders: buying_orders + selling_orders,
