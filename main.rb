@@ -1,6 +1,4 @@
 require 'json'
-require 'byebug'
-require 'awesome_print'
 
 class Main
   # Easier to test
@@ -48,7 +46,7 @@ class Main
     user = @users.select{|u| Main.matcher(u['id'], user_id) }.first
     if direction == 'buy'
       user['btc_balance'] += btc_amount
-      user['eur_balance'] -= btc_amount*price
+      user['eur_balance'] -= btc_amount * price
     else
       user['btc_balance'] -= btc_amount
       user['eur_balance'] += btc_amount * price
