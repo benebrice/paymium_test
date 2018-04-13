@@ -10,7 +10,7 @@ def matcher(val1, val2)
   val1.to_i == val2.to_i
 end
 
-def change_user(user_id, btc_amount, price, direction = 'buy')
+def store_user(user_id, btc_amount, price, direction)
   user = @users.select{|u| matcher(u['id'], user_id) }.first
   if direction == 'buy'
     user['btc_balance'] += btc_amount
@@ -22,12 +22,16 @@ def change_user(user_id, btc_amount, price, direction = 'buy')
   @final_users.push(user)
 end
 
+def update_data(queued_order)
+  user_id, btc_amount, price, direction = queued_order['user_id'], queued_order['btc_amount'], queued_order['price'], queued_order['direction']
+  queued_order['state'] = 'executed'
+  store_user(user_id, btc_amount, price, direction)
+  @orders.push(queued_order)
+end
+
 def execute_queued_orders(queued_order1, queued_order2)
-  change_user(queued_order1['user_id'], queued_order1['btc_amount'], queued_order1['price'], queued_order1['direction'])
-  change_user(queued_order2['user_id'], queued_order2['btc_amount'], queued_order2['price'], queued_order2['direction'])
-  queued_order1['state'] = 'executed'
-  queued_order2['state'] = 'executed'
-  @orders.push(queued_order1, queued_order2)
+  update_data(queued_order1)
+  update_data(queued_order2)
   @buying_orders = remove_queued_order(@buying_orders, queued_order1['id'])
   @selling_orders = remove_queued_order(@selling_orders, queued_order2['id'])
 end
