@@ -10,6 +10,31 @@ def matcher(val1, val2)
   val1.to_i == val2.to_i
 end
 
+def change_user(user_id, btc_amount, price, direction = 'buy')
+  user = @users.select{|u| matcher(u['id'], user_id) }.first
+  if direction == 'buy'
+    user['btc_balance'] += btc_amount
+    user['eur_balance'] -= price
+  else
+    user['btc_balance'] -= btc_amount
+    user['eur_balance'] += price
+  end
+  @final_users.push(user)
+end
+
+def execute_queued_orders(queued_order1, queued_order2)
+  change_user(queued_order1['user_id'], queued_order1['btc_amount'], queued_order1['price'], queued_order1['direction'])
+  change_user(queued_order2['user_id'], queued_order2['btc_amount'], queued_order2['price'], queued_order2['direction'])
+  queued_order1['state'] = 'executed'
+  queued_order2['state'] = 'executed'
+  @orders.push(queued_order1, queued_order2)
+  @buying_orders = remove_queued_order(@buying_orders, queued_order1['id'])
+  @selling_orders = remove_queued_order(@selling_orders, queued_order2['id'])
+end
+
+def remove_queued_order(orders, order_id)
+  orders.select{|order| !matcher(order['id'], order_id) }
+end
 
 data = JSON.parse(File.open('data.json').read)
 
@@ -24,8 +49,7 @@ queued_orders = data['queued_orders']
 @buying_orders.each do |buying_order|
   @selling_orders.each do |selling_order|
     if matcher(buying_order['price'], selling_order['price'])
-      #execute_queued_orders(buying_order, selling_order)
-      ap 'match'
+      execute_queued_orders(buying_order, selling_order)
     end
   end
 end
