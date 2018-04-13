@@ -46,6 +46,13 @@ describe 'Main class methods' do
     expect(Main.order_filter(orders).count).to eq(1)
     expect(Main.order_filter(orders, 'buy').count).to eq(1)
     expect(Main.order_filter(orders, 'sell').count).to eq(1)
+  end #remove_queued_order
+
+  it 'removes order from array match id' do
+    orders = [stringify({'id': '1'}), stringify({'id': '2'})]
+    expect(Main.remove_queued_order(orders, 1).count).to eq(1)
+    expect(Main.remove_queued_order(orders, 2).count).to eq(1)
+    expect(Main.remove_queued_order(orders, 3).count).to eq(2)
   end
 
   def stringify(hash)
