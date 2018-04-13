@@ -3,12 +3,14 @@ require 'byebug'
 require 'awesome_print'
 
 class Main
+  # Easier to test
+  attr_reader :users, :final_users, :queued_orders, :buying_orders, :selling_orders, :orders
   def initialize
     data = JSON.parse(File.open('data.json').read)
 
     @users = data['users']
     @final_users = []
-    queued_orders = data['queued_orders']
+    @queued_orders = data['queued_orders']
 
     @buying_orders = Main.order_filter(queued_orders)
     @selling_orders = Main.order_filter(queued_orders, 'sell')
