@@ -33,3 +33,11 @@ describe 'Main instance' do
     expect(@main.orders).to be_empty
   end
 end
+
+describe 'Main class methods' do
+  it 'matches 2 identical values (String or Integer)' do
+    expect(Main.matcher(1, 2)).to be false
+    expect(Main.matcher(1, "1")).to be true
+    expect(Main.matcher(1, 1)).to be true
+  end
+end
